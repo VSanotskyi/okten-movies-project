@@ -34,7 +34,7 @@ const SearchPage = () => {
     }
   };
 
-  const handleChange = (e: ChangeEvent<unknown>, value: number) => {
+  const handleChange = (_: ChangeEvent<unknown>, value: number) => {
     setPage(value);
     resPage?.setIsReset(false);
   };
