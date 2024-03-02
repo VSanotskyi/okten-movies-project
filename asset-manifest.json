@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/okten-movies-project/static/css/main.986ab2c4.css",
-    "main.js": "/okten-movies-project/static/js/main.504bc7cb.js",
+    "main.js": "/okten-movies-project/static/js/main.f925f7f9.js",
     "static/media/default-image.jpg": "/okten-movies-project/static/media/default-image.ff6e4e2b0818da157488.jpg",
     "index.html": "/okten-movies-project/index.html",
     "main.986ab2c4.css.map": "/okten-movies-project/static/css/main.986ab2c4.css.map",
-    "main.504bc7cb.js.map": "/okten-movies-project/static/js/main.504bc7cb.js.map"
+    "main.f925f7f9.js.map": "/okten-movies-project/static/js/main.f925f7f9.js.map"
   },
   "entrypoints": [
     "static/css/main.986ab2c4.css",
-    "static/js/main.504bc7cb.js"
+    "static/js/main.f925f7f9.js"
   ]
 }
