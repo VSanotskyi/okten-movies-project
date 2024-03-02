@@ -15,7 +15,7 @@ const SearchPage = () => {
   // @ts-ignore
   const [page, setPage] = useState(isNaN(+(paramsPage.get('page'))) ? 1 : +(paramsPage.get('page')));
   const [totalPage, setTotalPage] = useState(0);
-  
+
   const resPage = useResetPageContext();
 
   const search = pathname.split('/')[pathname.split('/').length - 1];
@@ -68,6 +68,8 @@ const SearchPage = () => {
         />
       )}
       {error && <Error message={error} />}
+      {!error && !isLoading && movies && movies?.length === 0 &&
+        <Error message={`${search}, not found`} />}
     </div>
   );
 };
