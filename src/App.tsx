@@ -2,10 +2,8 @@ import { Suspense, lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { Loading } from './components';
-import Layout from './layout/Layout';
 
-// const Layout = lazy(() => import('./layout/Layout'));
-
+const Layout = lazy(() => import('./layout/Layout'));
 const MoviePages = lazy(() => import('./pages/MoviePages'));
 const GenrePages = lazy(() => import('./pages/GenrePages'));
 const SearchPage = lazy(() => import('./pages/SearchPage'));
