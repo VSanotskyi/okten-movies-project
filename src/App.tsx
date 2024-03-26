@@ -15,10 +15,10 @@ const App = () => {
     <Suspense fallback={<Loading />}>
       <Routes>
         <Route path={'/'}
-               element={<Navigate to={'/movies'} />}
+               element={<Navigate to={'movies'} />}
         />
         <Route
-          path="/movies"
+          path="movies"
           element={<Layout />}
         >
           <Route
