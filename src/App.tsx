@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { Loading } from './components';
 
-const MainLayout = lazy(() => import('./layout/MainLayout'));
+const Layout = lazy(() => import('./layout/Layout'));
 const MoviePages = lazy(() => import('./pages/MoviePages'));
 const GenrePages = lazy(() => import('./pages/GenrePages'));
 const SearchPage = lazy(() => import('./pages/SearchPage'));
@@ -19,7 +19,7 @@ const App = () => {
         />
         <Route
           path="/movies"
-          element={<MainLayout />}
+          element={<Layout />}
         >
           <Route
             index
