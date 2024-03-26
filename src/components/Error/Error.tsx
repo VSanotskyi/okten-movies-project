@@ -1,41 +1,38 @@
-import { FC } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {FC} from 'react';
+import {useNavigate} from 'react-router-dom';
 
-import { Box, Typography, Button } from '@mui/material';
+import {Box, Typography, Button} from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 
-import { useResetPageContext } from '../../hooks';
 import css from './Error.module.css';
 
 interface IProps {
-  message: string;
+    message: string;
 }
 
-const Error: FC<IProps> = ({ message }) => {
-  const navigate = useNavigate();
-  const resPage = useResetPageContext();
+const Error: FC<IProps> = ({message}) => {
+    const navigate = useNavigate();
 
-  const handleClick = () => {
-    resPage?.setIsReset(true);
-    navigate('/');
-  };
+    const handleClick = () => {
+        navigate('/');
+    };
 
-  return (
-    <Box className={css.box}>
-      <Typography variant="h6"
-                  gutterBottom
-      >
+    return (
+        <Box className={css.box}>
+            <Typography variant="h6"
+                        gutterBottom
+            >
 
-        {message}
-      </Typography>
-      <Button variant="contained"
-              endIcon={<HomeIcon />}
-              onClick={handleClick}
-      >
-        Go home
-      </Button>
-    </Box>
-  );
+                {message}
+            </Typography>
+            <Button variant="contained"
+                    endIcon={<HomeIcon/>}
+                    onClick={handleClick}
+            >
+                Go home
+            </Button>
+        </Box>
+    );
 };
 
-export { Error };
+export {Error};

@@ -1,75 +1,50 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 
-import { api } from '../services';
-import { IMovie } from '../interfaces';
-import { Error, List, MovieItem, PaginationContainer, Loading } from '../components';
-import { useResetPageContext } from '../hooks';
+import {Error, List, MovieItem, PaginationContainer} from '../components';
+import {useAppDispatch, useMovies} from '../hooks';
+import {
+    getMoviesByGenreThunk,
+} from '../store/movies';
 
-const GenrePages = () => {
-  const { pathname } = useLocation();
-  const [paramsPage, setParamsPage] = useSearchParams({ page: '1' });
-  const [movies, setMovies] = useState<IMovie[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  // @ts-ignore
-  const [page, setPage] = useState(isNaN(+(paramsPage.get('page'))) ? 1 : +(paramsPage.get('page')));
-  const [totalPage, setTotalPage] = useState(0);
-  
-  const resPage = useResetPageContext();
+export default function GenrePages() {
+    const {pathname, search: localPage} = useLocation();
+    const dispatch = useAppDispatch();
 
-  const genreId = pathname.split('/')[pathname.split('/').length - 1];
+    const movies = useMovies().items;
+    const totalPage = useMovies().totalPage;
+    const resPage = useMovies().resPage;
+    const error = useMovies().error;
 
-  const getMovies = async (id: string, page: number) => {
-    setIsLoading(true);
-    try {
-      const { data } = await api.getByGenre(id, page);
-      setMovies(data.results);
-      setTotalPage(data['total_pages']);
-    } catch (err) {
-      const e = err as Error;
-      setError(e.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const [page, setPage] = useState(parseInt(localPage.split('=')[1]) || 1);
+    const currentPage = resPage ? 1 : page;
 
-  const handleChange = (_: ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-    resPage?.setIsReset(false);
-  };
+    const genreId = pathname.split('/')[pathname.split('/').length - 1];
 
-  useEffect(() => {
-    resPage?.isReset && setPage(1);
-  }, [resPage]);
+    useEffect(() => {
+        dispatch(getMoviesByGenreThunk({genreId, page: currentPage}));
+    }, [dispatch, genreId, currentPage]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-
-    setParamsPage({ page: page.toString() });
-
-    getMovies(genreId, page);
-  }, [genreId, page, setParamsPage]);
-
-  return (
-    <div>
-      {isLoading && <Loading />}
-      {movies?.length > 0 && !error && (
-        <List items={movies}
-              renderItem={(item: IMovie) => (
-                <MovieItem key={item.id}
-                           item={item}
-                />)}
-        />
-      )}
-      {totalPage !== 0 && (
-        <PaginationContainer totalPage={totalPage}
-                             page={page}
-                             handleChange={handleChange}
-        />)}
-      {error && <Error message={error} />}
-    </div>
-  );
+    return (
+        <>
+            {movies.length > 0 &&
+                <List items={movies}
+                      renderItem={(item) =>
+                          <MovieItem key={item.id}
+                                     item={item}
+                          />}
+                />
+            }
+            {totalPage &&
+                <PaginationContainer
+                    totalPage={totalPage}
+                    page={currentPage}
+                    setPage={setPage}
+                />
+            }
+            {
+                error && <Error message={typeof error === 'string' ? error : ''}/>
+            }
+        </>
+    );
 };
-
-export { GenrePages };

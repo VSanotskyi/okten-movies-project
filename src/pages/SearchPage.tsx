@@ -1,77 +1,55 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 
-import { api } from '../services';
-import { IMovie } from '../interfaces';
-import { useResetPageContext } from '../hooks';
-import { Error, List, MovieItem, PaginationContainer, Loading } from '../components';
+import {useAppDispatch, useMovies} from '../hooks';
+import {
+    getMoviesBySearchThunk,
+} from '../store/movies';
+import {Error, List, MovieItem, PaginationContainer} from '../components';
 
-const SearchPage = () => {
-  const { pathname } = useLocation();
-  const [paramsPage, setParamsPage] = useSearchParams({ page: '1' });
-  const [movies, setMovies] = useState<IMovie[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  // @ts-ignore
-  const [page, setPage] = useState(isNaN(+(paramsPage.get('page'))) ? 1 : +(paramsPage.get('page')));
-  const [totalPage, setTotalPage] = useState(0);
+export default function SearchPage() {
+    const {pathname, search: localPage} = useLocation();
+    const dispatch = useAppDispatch();
 
-  const resPage = useResetPageContext();
+    const movies = useMovies().items;
+    const totalPage = useMovies().totalPage;
+    const resPage = useMovies().resPage;
+    const error = useMovies().error;
+    const isLoading = useMovies().isLoading;
 
-  const search = pathname.split('/')[pathname.split('/').length - 1];
+    const [page, setPage] = useState(parseInt(localPage.split('=')[1]) || 1);
+    const currentPage = resPage ? 1 : page;
 
-  const getMoviesBySearch = async (search: string, page: number) => {
-    setIsLoading(true);
-    try {
-      const { data } = await api.getSearchMovies(search, page);
-      setTotalPage(data.total_pages);
-      setMovies(data.results);
-    } catch (err) {
-      const e = err as Error;
-      setError(e.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const search = pathname.split('/')[pathname.split('/').length - 1];
 
-  const handleChange = (_: ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-    resPage?.setIsReset(false);
-  };
+    useEffect(() => {
+        dispatch(getMoviesBySearchThunk({search, page: currentPage}));
+    }, [dispatch, search, currentPage]);
 
-  useEffect(() => {
-    resPage?.isReset && setPage(1);
-  }, [resPage]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-
-    setParamsPage({ page: page.toString() });
-
-    getMoviesBySearch(search, page);
-  }, [setParamsPage, page, search]);
-
-  return (
-    <div>
-      {isLoading && <Loading />}
-      {movies && movies?.length > 0 && !error && (
-        <List items={movies}
-              renderItem={(item: IMovie) => <MovieItem key={item.id}
-                                                       item={item}
-              />}
-        />
-      )}
-      {totalPage > 1 && (
-        <PaginationContainer totalPage={totalPage}
-                             page={page}
-                             handleChange={handleChange}
-        />
-      )}
-      {error && <Error message={error} />}
-      {!error && !isLoading && movies && movies?.length === 0 &&
-        <Error message={`${search}, not found`} />}
-    </div>
-  );
+    return (
+        <>
+            {movies.length > 0 &&
+                <List items={movies}
+                      renderItem={(item) =>
+                          <MovieItem key={item.id}
+                                     item={item}
+                          />}
+                />
+            }
+            {totalPage > 1 &&
+                <PaginationContainer
+                    totalPage={totalPage}
+                    page={currentPage}
+                    setPage={setPage}
+                />
+            }
+            {
+                movies.length < 1 && !error && !isLoading &&
+                <Error message={`"${search}" not found`}/>
+            }
+            {
+                error && <Error message={typeof error === 'string' ? error : ''}/>
+            }
+        </>
+    );
 };
-
-export { SearchPage };

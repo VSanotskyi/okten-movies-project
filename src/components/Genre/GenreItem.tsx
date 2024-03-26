@@ -1,30 +1,34 @@
-import { FC } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {FC} from 'react';
+import {useNavigate} from 'react-router-dom';
 
-import { Button } from '@mui/material';
+import {Button} from '@mui/material';
 
-import { IGenre } from '../../interfaces';
-import { useResetPageContext } from '../../hooks';
+import {IGenre} from '../../interfaces';
+import {togglePage} from '../../store/movies';
+import {useAppDispatch, useSearchToggle} from '../../hooks';
+import {toggleShowSearch} from '../../store/search';
 
 interface IProps {
-  genre: IGenre;
+    genre: IGenre;
 }
 
-const GenreItem: FC<IProps> = ({ genre }) => {
-  const navigate = useNavigate();
+const GenreItem: FC<IProps> = ({genre}) => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
-  const resetPage = useResetPageContext();
+    const showSearch = useSearchToggle().searchToggle;
 
-  const handleClick = (name: string, id: number) => {
-    resetPage?.setIsReset(true);
-    navigate(`/genre/${name.toLowerCase()}/${id}`);
-  };
+    const handleClick = (name: string, id: number) => {
+        dispatch(togglePage(true));
+        showSearch && dispatch(toggleShowSearch());
+        navigate(`/movies/genre/${name.toLowerCase()}/${id}`);
+    };
 
-  return (
-    <li>
-      <Button onClick={() => handleClick(genre.name, genre.id)}>{genre?.name}</Button>
-    </li>
-  );
+    return (
+        <li>
+            <Button onClick={() => handleClick(genre.name, genre.id)}>{genre?.name}</Button>
+        </li>
+    );
 };
 
-export { GenreItem };
+export {GenreItem};

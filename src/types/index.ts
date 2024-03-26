@@ -1,1 +1,1 @@
-export * from './typeRes';
+export * from './typeStore';

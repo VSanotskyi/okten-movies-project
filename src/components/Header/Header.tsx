@@ -1,103 +1,132 @@
-import { ChangeEvent, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import {ChangeEvent, useEffect, useState, KeyboardEvent} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 
 import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  Button,
-  Input,
-  InputAdornment,
+    AppBar,
+    Box,
+    Toolbar,
+    Typography,
+    Button,
+    Paper,
+    IconButton, InputBase,
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
 
-import { IGenre } from '../../interfaces';
-import { useThemeContext, useGenreContext, useResetPageContext } from '../../hooks';
-import { List, GenreItem } from '../../components';
+import {IGenre} from '../../interfaces';
+import {useAppDispatch, useGenres, useSearchToggle, useTheme} from '../../hooks';
+import {List, GenreItem} from '../../components';
+import {togglePage} from '../../store/movies';
+import {toggleTheme} from '../../store/theme';
+import {getAllGenresThunk} from '../../store/genres';
+import {toggleShowSearch} from '../../store/search';
 import css from './Header.module.css';
 
 const Header = () => {
-  const [showSearch, setShowSearch] = useState(false);
-  const [search, setSearch] = useState<string>('');
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
-  const genre = useGenreContext();
-  const theme = useThemeContext();
-  const resPage = useResetPageContext();
+    const genres = useGenres().items;
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  };
+    const showSearch = useSearchToggle().searchToggle;
+    const [search, setSearch] = useState<string>('');
 
-  const handleSubmit = () => {
-    if (search.length < 1) return;
-    resPage?.setIsReset(true);
-    navigate(`/search/${search}`);
-    setShowSearch(prev => !prev);
-    setSearch('');
-  };
+    const theme = useTheme().theme;
+    const currentTheme = theme ? 'dark-theme' : 'light-theme';
 
-  const handleChangeTheme = () => {
-    theme?.toggleTheme();
-  };
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    };
 
-  const toggleSearch = () => {
-    setShowSearch(prev => !prev);
-  };
+    const handleSubmit = () => {
+        if (search.length < 1) return;
+        dispatch(togglePage(true));
+        navigate(`search/${search}`);
+        setSearch('');
+    };
 
-  return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6"
-                      component="div"
-                      sx={{ flexGrow: 1 }}
-          >
-            <Link className={css[`${theme?.theme}`]}
-                  to={'/'}
-            >Movies</Link>
-          </Typography>
-          {showSearch && <Typography variant="h6"
-                                     component="div"
-                                     sx={{ flexGrow: 1 }}
-          >
-            <Input
-              onChange={handleChange}
-              value={search}
-              id="input-with-icon-adornment"
-              autoFocus={true}
-            />
-            <Button onClick={handleSubmit}>
-              <InputAdornment position="start">
-                <SearchIcon className={css[`${theme?.theme}`]} />
-              </InputAdornment>
-            </Button>
-          </Typography>}
-          {!showSearch && <Button onClick={toggleSearch}>
-            <SearchIcon className={css[`${theme?.theme}`]} />
-          </Button>}
-          <Button onClick={handleChangeTheme}>
-                            <span className={css[`${theme?.theme}`]}>
-                                {theme?.theme}
-                            </span>
-          </Button>
-          <AccountCircleIcon />
-        </Toolbar>
-      </AppBar>
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation();
+            handleSubmit();
+        }
+    };
 
-      {genre?.genres &&
+    const toggleSearch = () => {
+        dispatch(toggleShowSearch());
+    };
+
+    const handleClickHome = () => {
+        showSearch && dispatch(toggleShowSearch());
+    };
+
+    const handleChangeTheme = () => {
+        dispatch(toggleTheme());
+    };
+
+    useEffect(() => {
+        dispatch(getAllGenresThunk());
+    }, [dispatch]);
+
+    return (
         <Box>
-          <List items={genre?.genres}
-                renderItem={((item: IGenre) => <GenreItem key={item.id}
-                                                          genre={item}
-                />)}
-          />
+            <AppBar position="sticky">
+                <Toolbar>
+                    <Typography variant="h6"
+                                component="div"
+                                sx={{flexGrow: 1}}
+                    >
+                        <Link className={css[currentTheme]}
+                              to={'/'}
+                              onClick={handleClickHome}
+                        >Movies</Link>
+                    </Typography>
+                    <Button onClick={toggleSearch}>
+                        <SearchIcon className={css[currentTheme]}/>
+                    </Button>
+                    <Button onClick={handleChangeTheme}>
+                            <span className={css[currentTheme]}>
+                                {currentTheme}
+                            </span>
+                    </Button>
+                    <AccountCircleIcon/>
+                </Toolbar>
+            </AppBar>
+            {genres.length > 0 &&
+                <Box>
+                    <List items={genres}
+                          renderItem={((item: IGenre) => <GenreItem key={item.id}
+                                                                    genre={item}
+                          />)}
+                    />
+                </Box>
+            }
+            {showSearch &&
+                <Box className={css.searchBox}>
+                    <Paper
+                        component="form"
+                        sx={{p: '2px 4px', display: 'flex', alignItems: 'center', width: 300}}
+                    >
+                        <InputBase
+                            sx={{ml: 1, flex: 1, color: 'success'}}
+                            placeholder="Search Movies"
+                            autoFocus={true}
+                            onChange={handleChange}
+                            value={search}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <IconButton type="button"
+                                    sx={{p: '10px'}}
+                                    aria-label="search"
+                                    onClick={handleSubmit}
+                        >
+                            <SearchIcon/>
+                        </IconButton>
+                    </Paper>
+                </Box>}
         </Box>
-      }
-    </Box>
-  );
+    );
 };
 
-export { Header };
+export {Header};

@@ -18,5 +18,5 @@ export type IMovie = {
 export type IMoviesRes = {
     page: number;
     results: IMovie[];
-    'total_pages': number;
+    total_pages: number;
 }

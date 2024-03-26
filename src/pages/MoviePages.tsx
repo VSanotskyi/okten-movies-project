@@ -1,68 +1,45 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 
-import { api } from '../services';
-import { IMovie } from '../interfaces';
-import { Error, List, MovieItem, PaginationContainer, Loading } from '../components';
+import {getAllMoviesThunk} from '../store/movies';
+import {useAppDispatch, useMovies} from '../hooks';
+import {List, MovieItem, Error, PaginationContainer} from '../components';
 
-const MoviePages = () => {
-  const [paramsPage, setParamsPage] = useSearchParams({ page: '1' });
-  const [movies, setMovies] = useState<IMovie[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  // @ts-ignore
-  const [page, setPage] = useState(isNaN(+paramsPage.get('page')) ? 1 : +paramsPage.get('page'));
-  const [totalPage, setTotalPage] = useState(0);
+export default function MoviePages() {
+    const {search: localPage} = useLocation();
+    const dispatch = useAppDispatch();
 
-  const getMovies = async (page: number) => {
-    setIsLoading(true);
-    try {
-      const { data } = await api.getAll(page);
-      setTotalPage(data.total_pages);
-      setMovies(data.results);
-    } catch (err) {
-      const e = err as Error;
-      setError(e.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const movies = useMovies().items;
+    const totalPage = useMovies().totalPage;
+    const error = useMovies().error;
 
-  const handleChange = (_: ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-  };
+    const [page, setPage] = useState(parseInt(localPage.split('=')[1]) || 1);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
+    useEffect(() => {
+        dispatch(getAllMoviesThunk({page}));
+    }, [dispatch, page]);
 
-    setParamsPage({ page: page.toString() });
-
-    getMovies(page);
-  }, [page, setParamsPage, error]);
-
-  return (
-    <div>
-      {isLoading && <Loading />}
-      {movies && movies.length > 0 && !error && (
-        <List items={movies}
-              renderItem={(item: IMovie) => <MovieItem key={item.id}
-                                                       item={item}
-              />}
-        />
-      )}
-      {totalPage > 0 && (
-        <PaginationContainer totalPage={totalPage}
-                             page={page}
-                             handleChange={handleChange}
-        />
-      )}
-      {error && <Error message={error} />}
-    </div>
-  );
+    return (
+        <>
+            {movies.length > 0 &&
+                <List items={movies}
+                      renderItem={(item) =>
+                          <MovieItem key={item.id}
+                                     item={item}
+                          />}
+                />
+            }
+            {totalPage > 1 &&
+                <PaginationContainer
+                    totalPage={totalPage}
+                    page={page}
+                    setPage={setPage}
+                />
+            }
+            {
+                error && <Error message={typeof error === 'string' ? error : ''}/>
+            }
+        </>
+    );
 };
-
-export { MoviePages };
-
-
-
 

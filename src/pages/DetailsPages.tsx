@@ -1,44 +1,31 @@
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import {useEffect} from 'react';
+import {useLocation} from 'react-router-dom';
 
-import { api } from '../services';
-import { IDetails } from '../interfaces';
-import { DetailsItem, Error, Loading } from '../components';
+import {DetailsItem, Error} from '../components';
+import {useAppDispatch, useMovies} from '../hooks';
+import {getMovieDetailsThunk} from '../store/movies';
 
-const DetailsPages = () => {
-  const { pathname } = useLocation();
-  const [movieDetails, setMovieDetails] = useState<IDetails | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+export default function DetailsPages() {
+    const {pathname} = useLocation();
+    const dispatch = useAppDispatch();
 
-  const movieId = pathname.split('/')[pathname.split('/').length - 1];
+    const movieDetails = useMovies().details;
+    const error = useMovies().error;
 
-  const getDetails = async (id: string) => {
-    setIsLoading(true);
-    try {
-      const { data } = await api.getDetailsMovie(id);
-      setMovieDetails(data);
-    } catch (err) {
-      const e = err as Error;
-      setError(e.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const movieId = pathname.split('/')[pathname.split('/').length - 1];
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
+    useEffect(() => {
+        window.scrollTo(0, 0);
 
-    getDetails(movieId);
-  }, [movieId]);
+        dispatch(getMovieDetailsThunk({movieId}));
+    }, [movieId, dispatch]);
 
-  return (
-    <div>
-      {isLoading && <Loading />}
-      {movieDetails && !error && <DetailsItem item={movieDetails} />}
-      {error && <Error message={error} />}
-    </div>
-  );
+    return (
+        <div>
+            {movieDetails && <DetailsItem item={movieDetails}/>}
+            {
+                error && <Error message={typeof error === 'string' ? error : ''}/>
+            }
+        </div>
+    );
 };
-
-export { DetailsPages };

@@ -1,25 +1,20 @@
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import {BrowserRouter} from 'react-router-dom';
+import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
 
-import {
-  ThemeProvider,
-  ResetPageProvider,
-  GenreProvider,
-} from './hoc';
-
+import {store, persistor} from './store';
 import App from './App';
 import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
-  <ThemeProvider>
-    <GenreProvider>
-      <ResetPageProvider>
-        <BrowserRouter basename={'okten-movies-project'}>
-          <App />
-        </BrowserRouter>
-      </ResetPageProvider>
-    </GenreProvider>
-  </ThemeProvider>,
+  <Provider store={store}>
+    <PersistGate persistor={persistor}>
+      <BrowserRouter basename={'okten-movies-project'}>
+        <App/>
+      </BrowserRouter>
+    </PersistGate>
+  </Provider>,
 );
