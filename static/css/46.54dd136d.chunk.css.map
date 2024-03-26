@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/46.54dd136d.chunk.css","mappings":"AAAA,yBAEI,wBAAyB,CADzB,UAEJ,CAEA,0BAEI,qBAAyB,CADzB,aAEJ","sources":["layout/theme.module.css"],"sourcesContent":[".dark-theme {\n    color: #ffffff;\n    background-color: #161515;\n}\n\n.light-theme {\n    color: #161515;\n    background-color: #ffffff;\n}\n"],"names":[],"sourceRoot":""}
