@@ -1,9 +1,9 @@
 import ReactDOM from 'react-dom/client';
-import {BrowserRouter} from 'react-router-dom';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
-import {store, persistor} from './store';
+import { store, persistor } from './store';
 import App from './App';
 import './index.css';
 
@@ -13,7 +13,7 @@ root.render(
   <Provider store={store}>
     <PersistGate persistor={persistor}>
       <BrowserRouter basename={'okten-movies-project'}>
-        <App/>
+        <App />
       </BrowserRouter>
     </PersistGate>
   </Provider>,
