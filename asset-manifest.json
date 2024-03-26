@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/okten-movies-project/static/css/main.bffec41d.css",
-    "main.js": "/okten-movies-project/static/js/main.606efcde.js",
+    "main.js": "/okten-movies-project/static/js/main.2ac790be.js",
     "static/css/46.54dd136d.chunk.css": "/okten-movies-project/static/css/46.54dd136d.chunk.css",
     "static/js/46.01c8f471.chunk.js": "/okten-movies-project/static/js/46.01c8f471.chunk.js",
     "static/js/388.c2ae6559.chunk.js": "/okten-movies-project/static/js/388.c2ae6559.chunk.js",
@@ -12,7 +12,7 @@
     "static/media/default-image.jpg": "/okten-movies-project/static/media/default-image.ff6e4e2b0818da157488.jpg",
     "index.html": "/okten-movies-project/index.html",
     "main.bffec41d.css.map": "/okten-movies-project/static/css/main.bffec41d.css.map",
-    "main.606efcde.js.map": "/okten-movies-project/static/js/main.606efcde.js.map",
+    "main.2ac790be.js.map": "/okten-movies-project/static/js/main.2ac790be.js.map",
     "46.54dd136d.chunk.css.map": "/okten-movies-project/static/css/46.54dd136d.chunk.css.map",
     "46.01c8f471.chunk.js.map": "/okten-movies-project/static/js/46.01c8f471.chunk.js.map",
     "388.c2ae6559.chunk.js.map": "/okten-movies-project/static/js/388.c2ae6559.chunk.js.map",
@@ -23,6 +23,6 @@
   },
   "entrypoints": [
     "static/css/main.bffec41d.css",
-    "static/js/main.606efcde.js"
+    "static/js/main.2ac790be.js"
   ]
 }
