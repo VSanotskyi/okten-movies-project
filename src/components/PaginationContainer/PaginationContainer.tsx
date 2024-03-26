@@ -8,45 +8,46 @@ import {useAppDispatch, useMovies, useTheme} from '../../hooks';
 import css from './PaginationContainer.module.css';
 
 interface IProps {
-    totalPage: number;
-    page: number;
-    setPage: (page: number) => void;
+  totalPage: number;
+  page: number;
+  setPage: (page: number) => void;
 }
 
 const PaginationContainer: FC<IProps> = ({totalPage, page, setPage}) => {
-    const dispatch = useAppDispatch();
-    const {pathname} = useLocation();
+  const dispatch = useAppDispatch();
+  const {pathname} = useLocation();
 
-    const resPage = useMovies().resPage;
+  const resPage = useMovies().resPage;
 
-    const theme = useTheme().theme;
-    const currentTheme = theme ? 'dark-theme' : 'light-theme';
+  const theme = useTheme().theme;
+  const currentTheme = theme ? 'dark-theme' : 'light-theme';
 
-    const handleChange = (_: ChangeEvent<unknown>, value: number) => {
-        if (resPage) {
-            dispatch(togglePage(false));
-        }
-        setPage(value);
-    };
+  const handleChange = (_: ChangeEvent<unknown>, value: number) => {
+    if (resPage) {
+      dispatch(togglePage(false));
+    }
+    setPage(value);
+  };
 
-    return (
-        <Box className={css[currentTheme]}>
-            <Stack spacing={2}>
-                <Pagination
-                    count={totalPage < 500 ? totalPage : 500}
-                    page={page}
-                    onChange={handleChange}
-                    renderItem={(item) => (
-                        <PaginationItem
-                            component={Link}
-                            to={`${pathname}?page=${item.page}`}
-                            {...item}
-                        />
-                    )}
-                />
-            </Stack>
-        </Box>
-    );
+  return (
+    <Box className={css[currentTheme]}>
+      <Stack spacing={2}>
+        <Pagination
+          color={'primary'}
+          count={totalPage < 500 ? totalPage : 500}
+          page={page}
+          onChange={handleChange}
+          renderItem={(item) => (
+            <PaginationItem
+              component={Link}
+              to={`${pathname}?page=${item.page}`}
+              {...item}
+            />
+          )}
+        />
+      </Stack>
+    </Box>
+  );
 };
 
 export {PaginationContainer};
